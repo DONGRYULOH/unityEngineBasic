@@ -9,6 +9,11 @@ public class GameScene : BaseScene
         base.Init();
         SceneType = Defines.Scene.Game;
         Managers.UI.ShowSceneUI<UI_Inven>();
+
+        for (int i = 0; i < 5; i++)
+        {
+            Managers.Resource.Instantiate("unityChan");
+        }
     }
 
     public override void Clear()
