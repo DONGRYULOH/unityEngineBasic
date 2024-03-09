@@ -20,6 +20,7 @@ public class Managers : MonoBehaviour
     SceneManagerEx _scene = new SceneManagerEx();
     SoundManager _sound = new SoundManager();
     PoolManager _pool = new PoolManager();
+    DataManager _data = new DataManager();
 
 
     public static InputManager Input { get { return Instance.input; } }    
@@ -28,6 +29,7 @@ public class Managers : MonoBehaviour
     public static SceneManagerEx Scene { get { return Instance._scene; } }
     public static SoundManager Sound { get { return Instance._sound; } }
     public static PoolManager Pool { get { return Instance._pool; } }
+    public static DataManager Data { get { return Instance._data; } }
 
     public static Managers GetInstance() {
         Init();
@@ -58,6 +60,7 @@ public class Managers : MonoBehaviour
             DontDestroyOnLoad(manager);
             S_Instance = manager.GetComponent<Managers>();
 
+            S_Instance._data.Init();
             S_Instance._sound.Init(); // 게임시작시 Sound 붙이기
             S_Instance._pool.Init(); // pool 객체를 담을 Root를 만들어줌
         }
