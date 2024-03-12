@@ -44,7 +44,7 @@ public class Managers : MonoBehaviour
 
     void Update()
     {
-        input.OnUpdate();    
+        input.OnUpdate(); // 입력(마우스 클릭 또는 키보드)감지를 매 프레임마다 체크
     }
 
     static void Init() {

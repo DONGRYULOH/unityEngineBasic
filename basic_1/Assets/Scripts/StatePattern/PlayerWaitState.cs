@@ -9,7 +9,7 @@ public class PlayerWaitState : MonoBehaviour, PlayerState
     public void WaitAnimationState(Animator anim)
     {
         _playerController.playerState = PlayerController.PlayerStateEnum.Wait;
-        anim.SetFloat("Speed", 0.0f);
+        anim.CrossFade("WAIT", 0.1f);        
     }
 
     public void Handle(PlayerController playerController)
