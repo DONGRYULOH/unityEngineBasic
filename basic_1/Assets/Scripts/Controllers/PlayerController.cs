@@ -32,13 +32,19 @@ public class PlayerController : MonoBehaviour
     public bool StopSkill { get { return _stopSkill; } }
 
     void Start()
-    {        
-        _stat = gameObject.GetOrAddComponent<PlayerStat>(); // 플레이어 스탯(체력, 방어력 ..등) 적용
+    {
+        // 플레이어 스탯(체력, 방어력 ..등) 적용
+        _stat = gameObject.GetOrAddComponent<PlayerStat>();
 
+        // 플레이어 UpBar 생성
+        Managers.UI.MakeWorldSpaceUI<UI_HpBar>(transform);
+
+        // 입력(마우스) 발생시 플레이어에게 발생할 이벤트
         Managers.Input.mouseAction -= OnMouseEvent;
         Managers.Input.mouseAction += OnMouseEvent;
-         
-        StatePattern(); // state 패턴 호출
+
+        // state 패턴 호출
+        StatePattern();         
     }
 
     void Update()
@@ -46,7 +52,7 @@ public class PlayerController : MonoBehaviour
         
     }
    
-    // 플레이어가 스킬을 시전중인 상태일때 마우스를 클릭하는 경우 해당 메소드(OnMouseEvent_IdleRun)가 실행되기 때문에 분기처리를 해줬음
+    // 플레이어가 스킬을 시전중인 상태일때 마우스를 클릭하는 경우 다른 메소드가 실행되면 안되기 때문에 분기처리를 해줬음
     void OnMouseEvent(Defines.MouseEvent evt)
     {
         switch (playerState)
@@ -57,10 +63,10 @@ public class PlayerController : MonoBehaviour
             case PlayerStateEnum.Moving:
                 OnMouseEvent_IdleRun(evt);
                 break;
-            case PlayerStateEnum.Skill:
+            case PlayerStateEnum.Skill: // 공격을 하고 있는 상태라면 이동모션 불가능
                 {
                     if (evt == Defines.MouseEvent.PointerUp)
-                        _stopSkill = true;
+                        _stopSkill = true; // 마우스 클릭이 끝났을때 다른 모션 가능
                 }                
                 break;
         }

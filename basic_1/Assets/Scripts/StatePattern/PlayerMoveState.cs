@@ -20,7 +20,7 @@ public class PlayerMoveState : MonoBehaviour, PlayerState
 
     void UpdateMoving()
     {
-        // 플레이어 사정거리 안에 몬스터가 있으면 공격(단, 몬스터에 대해서 락온처리를 한 경우만)
+        // 1.락온이 되어있는 오브젝트를 향해 이동 (플레이어 사정거리 안에 몬스터가 있으면 공격상태로 변경)
         if (_playerController.LockTarget != null)
         {
             float distance = (_playerController.destPos - transform.position).magnitude;
@@ -32,9 +32,8 @@ public class PlayerMoveState : MonoBehaviour, PlayerState
             }
         }
 
+        // 2.단순한 이동으로 목적지까지 움직이는 경우
         Vector3 dir = _playerController.destPos - transform.position;
-
-        // 목적지 까지 도달한경우 (실수에서 실수를 빼면 오차범위가 있기 때문에 딱 0으로 나눠떨어지지 않음)
         if (dir.magnitude < 0.1f)
         {                        
             _playerController.PlayerWait();
@@ -53,20 +52,18 @@ public class PlayerMoveState : MonoBehaviour, PlayerState
                 return;
             }
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), 20 * Time.deltaTime);
-            MovingAnimationState(GetComponent<Animator>(), _playerController.Stat.MoveSpeed);
+            MovingAnimationState(GetComponent<Animator>());
         }
     }
 
-    public void MovingAnimationState(Animator anim, float playerSpeed)
+    public void MovingAnimationState(Animator anim)
     {
         // 플레이어의 상태와 애니메이션 변환은 같이 수행되니까 하나로 묶어서 수행
         _playerController.playerState = PlayerController.PlayerStateEnum.Moving;
 
         // 애니메이션 툴과 싱크를 맞추는 작업을 하지않고 애니메이션 제어도 코드에서 관리하도록 설정 
         // 애니메이션이 많아질수록 코드에서 싱크를 맞춰주는 작업도 많아지므로 오히려 코드에서만 제어하도록 하는게 좋을 수도 있음
-        anim.Play("RUN");
-        // anim.CrossFade("RUN", 0.1f);
-        // anim.SetFloat("Speed", playerSpeed); // 현재 게임상태에 대한 정보를 애니메이션 파라미터쪽으로 넘겨줌
+        anim.Play("RUN");        
     }
 
     // 애니메이션 이벤트 
@@ -82,6 +79,6 @@ public class PlayerMoveState : MonoBehaviour, PlayerState
         else
             _playerController = playerController;
 
-        MovingAnimationState(GetComponent<Animator>(), _playerController.Stat.MoveSpeed);
+        MovingAnimationState(GetComponent<Animator>());
     }
 }

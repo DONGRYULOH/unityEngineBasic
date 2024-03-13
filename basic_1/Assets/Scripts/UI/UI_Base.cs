@@ -12,7 +12,7 @@ public abstract class UI_Base : MonoBehaviour
     public abstract void Init();
 
     protected void Bind<T>(Type type) where T : UnityEngine.Object
-    {
+    {        
         string[] names = Enum.GetNames(type);
         UnityEngine.Object[] object1 = new UnityEngine.Object[names.Length];
         //  Bind<T> 형식이 Bind<Button>인 경우 typeof(T)는 typeof(Button)

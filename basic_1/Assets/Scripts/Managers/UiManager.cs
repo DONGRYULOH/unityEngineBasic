@@ -44,6 +44,8 @@ public class UiManager
         }
     }
 
+    // ------------- Popup UI --------------------------
+
     // name : 프리팹 이름
     public T ShowPopupUI<T>(string name = null) where T : UI_Popup
     {
@@ -114,7 +116,6 @@ public class UiManager
         return sceneUI;
     }
 
-
     // ------------- Popup도 아니고 Scene 아닌 sub UI --------------------------
 
     public T MakeSubItem<T>(Transform parent = null, string name = null) where T : UI_Base
@@ -127,6 +128,24 @@ public class UiManager
             go.transform.SetParent(parent);
 
         return Util.GetOrAddComponent<T>(go);        
+    }
+
+    public T MakeWorldSpaceUI<T>(Transform parent = null, string name = null) where T : UI_Base
+    {
+        if (string.IsNullOrEmpty(name))
+            name = typeof(T).Name;
+
+        // 프리팹으로 만든 HpBar를 인스턴스화 시켜서 해당 캐릭터에 붙여줌
+        GameObject go = Managers.Resource.Instantiate($"UI/WorldSpace/{name}");
+        if (parent != null)
+            go.transform.SetParent(parent);
+
+        Canvas canvas = go.GetComponent<Canvas>();
+        // RenderMode.ScreenSpaceCamera; --> 씬 밖에서 2D canvas 형태로 촬영
+        canvas.renderMode = RenderMode.WorldSpace; // 씬 안에 있는 어떤 하나의 카메라를 사용해서 렌더링 처리
+        canvas.worldCamera = Camera.main;
+
+        return Util.GetOrAddComponent<T>(go);
     }
 
     // 씬이 변경되면 기존에 있는 데이터를 없애버림

@@ -8,7 +8,7 @@ public class GameScene : BaseScene
     {
         base.Init();
         SceneType = Defines.Scene.Game;
-        Managers.UI.ShowSceneUI<UI_Inven>();
+        // Managers.UI.ShowSceneUI<UI_Inven>();
 
         gameObject.GetOrAddComponent<CursorController>();
     }

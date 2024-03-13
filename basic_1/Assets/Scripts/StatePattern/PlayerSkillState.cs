@@ -16,7 +16,7 @@ public class PlayerSkillState : MonoBehaviour, PlayerState
                 if (_playerController.LockTarget != null)
                 {
                     Vector3 dir = _playerController.LockTarget.transform.position - transform.position;
-                    Quaternion quat = Quaternion.LookRotation(dir);
+                    Quaternion quat = Quaternion.LookRotation(dir);                    
                     transform.rotation = Quaternion.Lerp(transform.rotation, quat, 20 * Time.deltaTime);
                 }
 
@@ -28,6 +28,17 @@ public class PlayerSkillState : MonoBehaviour, PlayerState
     // 애니메이션에 추가한 이벤트 발동
     void OnHitEvent()
     {        
+        if(_playerController.LockTarget != null)
+        {
+            // Q) 내가 상대방을 공격했을때 내가 직접 상대방의 hp를 가져와서 줄여줄건지? 아니면 상대방쪽에서 hp를 스스로 깎게끔 처리할것인지? 
+            // 결론 : 피해를 받는 상대방쪽에서 스스로 hp를 깎는게 좋을 수도 있다고 생각함 
+            // 왜냐하면 상대방의 방어력, 공격력 무시 ... 등으로 인해 hp가 깎이는 비율이 줄어들수 있기 때문에 상대방쪽에서 코드를 수정하는게 편함
+            Stat targetStat = _playerController.LockTarget.GetComponent<Stat>();
+            PlayerStat myStat = _playerController.GetComponent<PlayerStat>();
+            int damage = Mathf.Max(0, myStat.Attack - targetStat.Defense);
+            targetStat.Hp -= damage;
+        }
+
         if (_playerController.StopSkill)
         {            
             _playerController.PlayerWait();
