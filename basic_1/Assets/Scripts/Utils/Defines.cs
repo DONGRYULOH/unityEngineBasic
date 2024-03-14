@@ -6,13 +6,21 @@ using UnityEngine;
 
 public class Defines
 {
+    // 플레이어와 몬스터가 공통으로 사용할 상태 
+    public enum State
+    {
+        Die,
+        Moving,
+        Wait,
+        Skill
+    }
+
     public enum Layer
     {
         Monster1 = 6,
         Ground = 7,
         Block = 8,
     }
-
 
     public enum Scene
     {

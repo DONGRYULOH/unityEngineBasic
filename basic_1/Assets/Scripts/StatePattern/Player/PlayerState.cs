@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface PlayerState
 {
-    void Handle(PlayerController playerController);
+    void Handle(PlayerController controller);
 }

@@ -3,36 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : BaseController
 {
-    PlayerStat _stat;
-    public Vector3 destPos;
+    private PlayerStat _stat;
 
     private PlayerStateContext _playerStateContext;
     private PlayerState dieState, moveState, waitState, skillState;
-    
-    int _mask = (1 << (int)Defines.Layer.Ground) | (1 << (int)Defines.Layer.Monster1); // Layer 마스킹 처리    
-    GameObject _lockTarget; // 몬스터를 클릭시 타켓팅 설정
-    public GameObject LockTarget { get { return _lockTarget; } }
 
-    public enum PlayerStateEnum
-    {
-        Die,
-        Moving,
-        Wait,
-        Skill,
-    }
-    public PlayerStateEnum playerState = PlayerStateEnum.Wait;
+    private int _mask = (1 << (int)Defines.Layer.Ground) | (1 << (int)Defines.Layer.Monster1); // Layer 마스킹 처리    
 
-    public PlayerStateEnum PlayerState { get { return playerState; } set { playerState = value; } }
-    public PlayerStat Stat { get { return _stat; }}
+    // 몬스터와 플레이어가 공통으로 갖고 있는 상태(이동, 멈춤)도 있지만 서로 다른 상태(플레이어의 버프 상태 .)도 있을 수 있음
+    private Defines.State playerState = Defines.State.Wait;
 
+    private bool _stopSkill = false;
 
-    bool _stopSkill = false;
+    public Defines.State PlayerState { get { return playerState; } set { playerState = value; } }
+    public PlayerStat Stat { get { return _stat; }}    
     public bool StopSkill { get { return _stopSkill; } }
 
-    void Start()
-    {
+    public override void Init()
+    {        
         // 플레이어 스탯(체력, 방어력 ..등) 적용
         _stat = gameObject.GetOrAddComponent<PlayerStat>();
 
@@ -47,23 +37,37 @@ public class PlayerController : MonoBehaviour
         StatePattern();         
     }
 
-    void Update()
+    private void Update()
     {
-        
+        switch (PlayerState)
+        {
+            case Defines.State.Die:
+                Die();
+                break;
+            case Defines.State.Moving:
+                Move();
+                break;
+            case Defines.State.Wait:
+                Wait();
+                break;
+            case Defines.State.Skill:
+                Skill();
+                break;
+        }
     }
-   
+
     // 플레이어가 스킬을 시전중인 상태일때 마우스를 클릭하는 경우 다른 메소드가 실행되면 안되기 때문에 분기처리를 해줬음
     void OnMouseEvent(Defines.MouseEvent evt)
     {
         switch (playerState)
         {
-            case PlayerStateEnum.Wait:
+            case Defines.State.Wait:
                 OnMouseEvent_IdleRun(evt);
                 break;
-            case PlayerStateEnum.Moving:
+            case Defines.State.Moving:
                 OnMouseEvent_IdleRun(evt);
                 break;
-            case PlayerStateEnum.Skill: // 공격을 하고 있는 상태라면 이동모션 불가능
+            case Defines.State.Skill: // 공격을 하고 있는 상태라면 이동모션 불가능
                 {
                     if (evt == Defines.MouseEvent.PointerUp)
                         _stopSkill = true; // 마우스 클릭이 끝났을때 다른 모션 가능
@@ -76,8 +80,8 @@ public class PlayerController : MonoBehaviour
     {
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        bool raycastHit = Physics.Raycast(ray, out hit, 100.0f, _mask);
-        // Debug.DrawRay(Camera.main.transform.position, ray.direction * 100.0f, Color.red, 2.0f);
+        bool raycastHit = Physics.Raycast(ray, out hit, 50.0f, _mask);
+        //Debug.DrawRay(Camera.main.transform.position, ray.direction * 50.0f, Color.red, 2.0f);
 
         switch (evt)
         {            
@@ -94,7 +98,7 @@ public class PlayerController : MonoBehaviour
                             _lockTarget = null;
 
                         destPos = hit.point;                        
-                        PlayerMove();
+                        Move();
                     }
                 }
                 break;
@@ -122,22 +126,22 @@ public class PlayerController : MonoBehaviour
         skillState = gameObject.AddComponent<PlayerSkillState>();
     }
 
-    public void PlayerMove()
+    public void Move()
     {
         _playerStateContext.Transition(moveState);
     }
 
-    public void PlayerWait()
+    public void Wait()
     {
         _playerStateContext.Transition(waitState);
     }
 
-    public void PlayerDie()
+    public void Die()
     {
         _playerStateContext.Transition(dieState);
     }
 
-    public void PlayerSkill()
+    public void Skill()
     {
         _playerStateContext.Transition(skillState);
     }
