@@ -20,9 +20,9 @@ public class MonsterWaitState : MonoBehaviour, MonsterState
     }
 
     public void RangeCheck()
-    {        
-        // 플레이어가 몬스터가 인지하는 반경안에 들어왔을때
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
+    {
+        // 플레이어가 몬스터가 인지하는 반경안에 들어왔을때 그 플레이어를 락온 시켜줌
+        GameObject player = Managers.Game.GetPlayer();
         if (player == null)
             return;
 
@@ -36,8 +36,7 @@ public class MonsterWaitState : MonoBehaviour, MonsterState
     }
 
     public void WaitAnimationState(Animator anim)
-    {
-        _monsterController.State = Defines.State.Wait;
+    {        
         anim.Play("WAIT");
     }
 

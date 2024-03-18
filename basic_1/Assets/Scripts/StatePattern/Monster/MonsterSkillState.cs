@@ -12,12 +12,12 @@ public class MonsterSkillState : MonoBehaviour, MonsterState
             _monsterController = gameObject.GetOrAddComponent<MonsterController>();
         else
             _monsterController = controller;
-        
-        RockOnOrDeFaultEvent();
+
+        RockOnEvent();
         SkillAnimationState(GetComponent<Animator>());
     }
 
-    public void RockOnOrDeFaultEvent()
+    public void RockOnEvent()
     {
         // 락온인 경우 해당 해당 대상을 바라보게 처리
         if (_monsterController.LockTarget != null)
@@ -30,7 +30,6 @@ public class MonsterSkillState : MonoBehaviour, MonsterState
 
     public void SkillAnimationState(Animator anim)
     {
-        _monsterController.State = Defines.State.Skill;
         anim.Play("ATTACK");
     }
 
@@ -38,12 +37,11 @@ public class MonsterSkillState : MonoBehaviour, MonsterState
     {
         if(_monsterController.LockTarget != null)
         {
+            // 몬스터가 플레이어를 공격했을때 플레이어 스탯에서 HP 처리
             Stat targetStat = _monsterController.LockTarget.GetComponent<Stat>();
-            Stat myStat = _monsterController.GetComponent<Stat>();
-            int damage = Mathf.Max(0, myStat.Attack - targetStat.Defense);
-            targetStat.Hp -= damage;
+            targetStat.OnAttacked(_monsterController.Stat);
 
-            if(targetStat.Hp > 0)
+            if (targetStat.Hp > 0)
             {
                 // 사정거리 체크
                 float distance = (_monsterController.LockTarget.transform.position - transform.position).magnitude;
@@ -54,8 +52,8 @@ public class MonsterSkillState : MonoBehaviour, MonsterState
             }
             else
             {
-                _monsterController.State = Defines.State.Wait;
-                _monsterController.RangeCheck = false;
+                Managers.Game.DeSpawn(targetStat.gameObject);
+                _monsterController.State = Defines.State.Wait;                
             }
         }
         else

@@ -35,4 +35,30 @@ public class Stat : MonoBehaviour
         _defense = 5;
         _moveSpeed = 5.0f;
     }
+
+    public virtual void OnAttacked(Stat attacker)
+    {
+        int damage = Mathf.Max(0, attacker.Attack - Defense);
+        Hp -= damage;
+        if (Hp <= 0)
+        {
+            Hp = 0;
+            OnDead(attacker);
+        }
+    }
+
+    protected virtual void OnDead(Stat attacker)
+    {
+        // PlayerStat의 기반(부모) 클래스가 Stat이기 때문에 as 연산자를 이용해서 파생(자식) 클래스인 PlayerStat로 변환
+        // as 연산자는 부모 자식간의 형식 변환에 사용되는 문법으로 as [자격]에 해당되지 않으면 null을 리턴한다.
+        // "attacker"가 PlayerStat의 자격에 맞으면 그 자격으로 변환
+        PlayerStat playerStat = attacker as PlayerStat;
+        if(playerStat != null)
+        {
+            // TODO : 몬스터 별로 주는 Exp가 다르기 때문에 나중에 데이터 시트를 만들어서 체인지 하기
+            playerStat.Exp += 5;
+        }        
+
+        Managers.Game.DeSpawn(gameObject);
+    }
 }

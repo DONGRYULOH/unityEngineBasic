@@ -24,16 +24,21 @@ public class MonsterController : BaseController
     public float ScanRange { get { return _scanRange; } set { _scanRange = value; } }
     public float AttackRange { get { return _attackRange; } set { _attackRange = value; } }
     public Defines.State State { get { return state; } set { state = value; } }
-    public Stat Stat { get { return _stat; } set { _stat = value; } }
-    public MonsterState WaitState { get { return waitState; } }
+    public Stat Stat { get { return _stat; } set { _stat = value; } }    
 
     public override void Init()
     {
+        // Type 설정
+        WorldObjectType = Defines.WorldObject.Monster;
+
+        // 스탯
         _stat = gameObject.GetComponent<Stat>();
 
+        // HpBar UI 표시
         if (gameObject.GetComponentInChildren<UI_HpBar>() == null)
             Managers.UI.MakeWorldSpaceUI<UI_HpBar>(transform);
 
+        // 몬스터의 state 패턴 
         StatePattern();
     }
 

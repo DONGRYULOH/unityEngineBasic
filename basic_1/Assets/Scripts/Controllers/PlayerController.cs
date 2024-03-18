@@ -22,7 +22,10 @@ public class PlayerController : BaseController
     public bool StopSkill { get { return _stopSkill; } }
 
     public override void Init()
-    {        
+    {
+        // Type 설정
+        WorldObjectType = Defines.WorldObject.Player;
+
         // 플레이어 스탯(체력, 방어력 ..등) 적용
         _stat = gameObject.GetOrAddComponent<PlayerStat>();
 
@@ -81,7 +84,7 @@ public class PlayerController : BaseController
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         bool raycastHit = Physics.Raycast(ray, out hit, 50.0f, _mask);
-        //Debug.DrawRay(Camera.main.transform.position, ray.direction * 50.0f, Color.red, 2.0f);
+        Debug.DrawRay(Camera.main.transform.position, ray.direction * 50.0f, Color.red, 2.0f);
 
         switch (evt)
         {            

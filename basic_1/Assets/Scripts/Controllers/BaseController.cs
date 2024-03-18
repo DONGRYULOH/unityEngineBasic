@@ -10,6 +10,8 @@ public abstract class BaseController : MonoBehaviour
     [SerializeField]
     protected GameObject _lockTarget; // 해당 오브젝트 타켓팅 설정
 
+    public Defines.WorldObject WorldObjectType { get; protected set; } = Defines.WorldObject.Unknown;
+
     public Vector3 DestPos { get { return destPos; } set { destPos = value; } }
     public GameObject LockTarget { get { return _lockTarget; } set { _lockTarget = value; } }
 

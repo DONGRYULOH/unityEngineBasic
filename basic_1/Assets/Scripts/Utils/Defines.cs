@@ -6,6 +6,13 @@ using UnityEngine;
 
 public class Defines
 {
+    public enum WorldObject
+    {
+        Unknown,
+        Player,
+        Monster
+    }
+
     // 플레이어와 몬스터가 공통으로 사용할 상태 
     public enum State
     {

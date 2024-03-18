@@ -11,7 +11,7 @@ public class CameraController : MonoBehaviour
     Vector3 delta = new Vector3(0.0f, 6.0f, -5.0f); // 플레이어로 부터 얼만큼 떨어져 있는지
 
     [SerializeField]
-    GameObject player;
+    GameObject player;    
 
     // Start is called before the first frame update
     void Start()
@@ -32,20 +32,22 @@ public class CameraController : MonoBehaviour
 
         if(mode == Defines.CameraMode.QuaterView)
         {
-            transform.position = player.transform.position + delta;
-            transform.LookAt(player.transform);
-
-            /*RaycastHit hit;
-            if(Physics.Raycast(player.transform.position, delta, out hit, delta.magnitude, LayerMask.GetMask("Wall")))
+            // 풀링 대상의 객체인 경우 메모리에서 제거하지 않고 inactive 상태처리로 바꾸기 때문에 null 체크로는 판별 불가능
+            if (player == null || !player.activeSelf) return;
+            
+            RaycastHit hit;
+            if(Physics.Raycast(player.transform.position, delta, out hit, delta.magnitude, LayerMask.GetMask("Block")))
             {
+                // 벽으로 가려져 있는 경우 카메라를 캐릭터 위치로 이동 ** 
                 float dist = (hit.point - player.transform.position).magnitude;
                 transform.position = player.transform.position + delta.normalized * dist; 
             }
-            else
+            else            
             {
+                // 플레이어가 이동하는 위치에 맞춰서 카메라 위치 변경
                 transform.position = player.transform.position + delta;
                 transform.LookAt(player.transform);
-            }  */          
+            }
         }
         
     }
@@ -54,5 +56,10 @@ public class CameraController : MonoBehaviour
     {
         mode = Defines.CameraMode.QuaterView;
         this.delta = delta;
+    }
+
+    public void SetPlayer(GameObject player)
+    {
+        this.player = player;
     }
 }

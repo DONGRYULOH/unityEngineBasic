@@ -28,11 +28,7 @@ public class PlayerMoveState : MonoBehaviour, PlayerState
             _playerController.Wait();
         }
         else
-        {
-            NavMeshAgent nma = gameObject.GetOrAddComponent<NavMeshAgent>();            
-            float moveDist = Mathf.Clamp(_playerController.Stat.MoveSpeed * Time.deltaTime, 0, dir.magnitude);
-            nma.Move(dir.normalized * moveDist);
-
+        {            
             Debug.DrawRay(transform.position + Vector3.up * 0.5f, dir.normalized, Color.blue);
             if (Physics.Raycast(transform.position + Vector3.up * 0.5f, dir, 1.0f, LayerMask.GetMask("Block")))
             {
@@ -40,16 +36,17 @@ public class PlayerMoveState : MonoBehaviour, PlayerState
                     _playerController.Wait();
                 return;
             }
+
+            float moveDist = Mathf.Clamp(_playerController.Stat.MoveSpeed * Time.deltaTime, 0, dir.magnitude);
+            transform.position += dir.normalized * moveDist;
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), 20 * Time.deltaTime);
             MovingAnimationState(GetComponent<Animator>());
         }
     }
 
     public void MovingAnimationState(Animator anim)
-    {
-        // 플레이어의 상태와 애니메이션 변환은 같이 수행되니까 하나로 묶어서 수행
+    {        
         _playerController.PlayerState = Defines.State.Moving;
-
         // 애니메이션 툴과 싱크를 맞추는 작업을 하지않고 애니메이션 제어도 코드에서 관리하도록 설정 
         // 애니메이션이 많아질수록 코드에서 싱크를 맞춰주는 작업도 많아지므로 오히려 코드에서만 제어하도록 하는게 좋을 수도 있음
         anim.Play("RUN");        
